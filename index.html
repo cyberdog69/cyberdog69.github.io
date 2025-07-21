@@ -1,32 +1,138 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script type="text/javascript">
-        google.charts.load('current', {'packages':['corechart']});
-        google.charts.setOnLoadCallback(drawChart);
-
-        function drawChart() {
-            const data = google.visualization.arrayToDataTable([
-                ['Year', 'Sales', 'Expenses'],
-                ['2004',  1000,      400],
-                ['2005',  1170,      460],
-                ['2006',  660,       1120],
-                ['2007',  1030,      540]
-            ]);
-
-            const options = {
-                title: 'Company Performance',
-                curveType: 'function',
-                legend: { position: 'bottom' }
-            };
-
-            const chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
-            chart.draw(data, options);
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍺 Счетчик пива</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
         }
-    </script>
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #ff9800;
+        }
+        .counter {
+            font-size: 48px;
+            margin: 20px 0;
+            color: #ff5722;
+        }
+        button {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #388e3c;
+        }
+        button.reset {
+            background: #f44336;
+        }
+        button.reset:hover {
+            background: #d32f2f;
+        }
+        .history {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .beer-icon {
+            font-size: 30px;
+            margin-right: 10px;
+        }
+    </style>
 </head>
 <body>
-    <div id="curve_chart" style="width: 900px; height: 500px"></div>
+    <div class="container">
+        <h1>🍺 Счетчик пива</h1>
+        
+        <div class="counter" id="beerCount">0</div>
+        
+        <div>
+            <button onclick="addBeer(1)">+1 Пиво</button>
+            <button onclick="addBeer(-1)">-1 Пиво</button>
+            <button class="reset" onclick="resetCounter()">Сбросить</button>
+        </div>
+        
+        <div class="history">
+            <h3>История:</h3>
+            <ul id="historyList"></ul>
+        </div>
+    </div>
+
+    <script>
+        // Загружаем данные из localStorage
+        let beerData = JSON.parse(localStorage.getItem('beerData')) || {
+            count: 0,
+            history: []
+        };
+
+        // Обновляем счетчик и историю при загрузке
+        updateCounter();
+        updateHistory();
+
+        // Функция добавления/удаления пива
+        function addBeer(change) {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+            
+            beerData.count += change;
+            if (beerData.count < 0) beerData.count = 0;
+            
+            beerData.history.unshift({
+                date: dateStr,
+                change: change
+            });
+            
+            // Сохраняем в localStorage
+            localStorage.setItem('beerData', JSON.stringify(beerData));
+            
+            updateCounter();
+            updateHistory();
+        }
+
+        // Функция сброса
+        function resetCounter() {
+            if (confirm("Точно сбросить счетчик?")) {
+                beerData = { count: 0, history: [] };
+                localStorage.setItem('beerData', JSON.stringify(beerData));
+                updateCounter();
+                updateHistory();
+            }
+        }
+
+        // Обновление счетчика
+        function updateCounter() {
+            document.getElementById('beerCount').textContent = beerData.count;
+        }
+
+        // Обновление истории
+        function updateHistory() {
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = '';
+            
+            beerData.history.slice(0, 10).forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span class="beer-icon">${item.change > 0 ? '🍺' : '➖'}</span> 
+                               ${item.date}: ${item.change > 0 ? '+' : ''}${item.change}`;
+                historyList.appendChild(li);
+            });
+        }
+    </script>
 </body>
 </html>
