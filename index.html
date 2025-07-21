@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🍺 Счетчик пива</title>
+    <title>🍺 Пивной трекер с финансами</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -13,7 +14,7 @@
             background-color: #f5f5f5;
         }
         .container {
-            max-width: 500px;
+            max-width: 800px;
             margin: 0 auto;
             background: white;
             padding: 20px;
@@ -26,7 +27,24 @@
         .counter {
             font-size: 48px;
             margin: 20px 0;
+        }
+        #beerCount {
             color: #ff5722;
+        }
+        #totalCost {
+            color: #4caf50;
+            font-size: 24px;
+            margin: 10px 0;
+        }
+        .input-group {
+            margin: 15px 0;
+        }
+        input {
+            padding: 8px;
+            width: 80px;
+            margin-right: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
         }
         button {
             background: #4caf50;
@@ -47,6 +65,10 @@
         button.reset:hover {
             background: #d32f2f;
         }
+        .chart-container {
+            margin: 30px 0;
+            height: 300px;
+        }
         .history {
             margin-top: 20px;
             text-align: left;
@@ -55,23 +77,74 @@
             font-size: 30px;
             margin-right: 10px;
         }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #ddd;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+        }
+        .tab.active {
+            background: #4caf50;
+            color: white;
+        }
+        .cost-info {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🍺 Счетчик пива</h1>
+        <h1>🍺 Пивной трекер с финансами</h1>
         
-        <div class="counter" id="beerCount">0</div>
-        
-        <div>
-            <button onclick="addBeer(1)">+1 Пиво</button>
-            <button onclick="addBeer(-1)">-1 Пиво</button>
-            <button class="reset" onclick="resetCounter()">Сбросить</button>
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('counter')">Счетчик</div>
+            <div class="tab" onclick="showTab('stats')">Статистика</div>
         </div>
         
-        <div class="history">
-            <h3>История:</h3>
-            <ul id="historyList"></ul>
+        <div id="counterTab">
+            <div class="counter">
+                <div id="beerCount">0</div>
+                <div id="totalCost">Общая сумма: 0 ₽</div>
+            </div>
+            
+            <div class="input-group">
+                <label for="price">Цена за пиво (₽):</label>
+                <input type="number" id="price" min="0" value="100">
+            </div>
+            
+            <div>
+                <button onclick="addBeer(1)">+1 Пиво</button>
+                <button onclick="addBeer(-1)">-1 Пиво</button>
+                <button class="reset" onclick="resetCounter()">Сбросить всё</button>
+            </div>
+            
+            <div class="cost-info">
+                <p>Сегодня: <span id="todayCost">0</span> ₽</p>
+                <p>В этом месяце: <span id="monthCost">0</span> ₽</p>
+            </div>
+            
+            <div class="history">
+                <h3>Последние изменения:</h3>
+                <ul id="historyList"></ul>
+            </div>
+        </div>
+        
+        <div id="statsTab" style="display: none;">
+            <div class="chart-container">
+                <canvas id="beerChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="costChart"></canvas>
+            </div>
+            <button onclick="updateCharts()">Обновить графики</button>
         </div>
     </div>
 
@@ -79,46 +152,184 @@
         // Загружаем данные из localStorage
         let beerData = JSON.parse(localStorage.getItem('beerData')) || {
             count: 0,
-            history: []
+            totalCost: 0,
+            price: 100,
+            history: [],
+            dailyStats: {}, // { "2023-10-01": { count: 3, cost: 300 } }
+            monthlyStats: {} // { "2023-10": { count: 8, cost: 800 } }
         };
 
-        // Обновляем счетчик и историю при загрузке
-        updateCounter();
-        updateHistory();
+        // Инициализация графиков
+        let beerChart, costChart;
+        function initCharts() {
+            const beerCtx = document.getElementById('beerChart').getContext('2d');
+            beerChart = new Chart(beerCtx, {
+                type: 'bar',
+                data: { 
+                    labels: [], 
+                    datasets: [{
+                        label: 'Пива за день',
+                        data: [],
+                        backgroundColor: 'rgba(255, 165, 0, 0.7)',
+                        borderColor: 'rgba(255, 165, 0, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+
+            const costCtx = document.getElementById('costChart').getContext('2d');
+            costChart = new Chart(costCtx, {
+                type: 'line',
+                data: { 
+                    labels: [], 
+                    datasets: [{
+                        label: 'Затраты (₽)',
+                        data: [],
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+
+            updateCharts();
+        }
+
+        // Обновление графиков
+        function updateCharts() {
+            updateStats();
+            
+            const dates = Object.keys(beerData.dailyStats).sort();
+            const beerValues = dates.map(date => beerData.dailyStats[date].count);
+            const costValues = dates.map(date => beerData.dailyStats[date].cost);
+            
+            beerChart.data.labels = dates;
+            beerChart.data.datasets[0].data = beerValues;
+            beerChart.update();
+            
+            costChart.data.labels = dates;
+            costChart.data.datasets[0].data = costValues;
+            costChart.update();
+        }
+
+        // Обновление статистики
+        function updateStats() {
+            beerData.dailyStats = {};
+            beerData.monthlyStats = {};
+            
+            beerData.history.forEach(entry => {
+                const date = new Date(entry.timestamp);
+                const dateKey = date.toISOString().split('T')[0];
+                const monthKey = date.toISOString().substr(0, 7);
+                
+                // Дневная статистика
+                if (!beerData.dailyStats[dateKey]) {
+                    beerData.dailyStats[dateKey] = { count: 0, cost: 0 };
+                }
+                beerData.dailyStats[dateKey].count += entry.change;
+                beerData.dailyStats[dateKey].cost += entry.change * entry.price;
+                
+                // Месячная статистика
+                if (!beerData.monthlyStats[monthKey]) {
+                    beerData.monthlyStats[monthKey] = { count: 0, cost: 0 };
+                }
+                beerData.monthlyStats[monthKey].count += entry.change;
+                beerData.monthlyStats[monthKey].cost += entry.change * entry.price;
+            });
+            
+            localStorage.setItem('beerData', JSON.stringify(beerData));
+            updateTodayCost();
+        }
+
+        // Обновление стоимости за сегодня/месяц
+        function updateTodayCost() {
+            const today = new Date().toISOString().split('T')[0];
+            const month = new Date().toISOString().substr(0, 7);
+            
+            document.getElementById('todayCost').textContent = 
+                beerData.dailyStats[today]?.cost || 0;
+            
+            document.getElementById('monthCost').textContent = 
+                beerData.monthlyStats[month]?.cost || 0;
+        }
+
+        // Переключение вкладок
+        function showTab(tabName) {
+            document.getElementById('counterTab').style.display = 'none';
+            document.getElementById('statsTab').style.display = 'none';
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            
+            document.getElementById(tabName + 'Tab').style.display = 'block';
+            document.querySelector(`.tab[onclick="showTab('${tabName}')"]`).classList.add('active');
+            
+            if (tabName === 'stats' && !beerChart) {
+                initCharts();
+            }
+        }
 
         // Функция добавления/удаления пива
         function addBeer(change) {
+            const price = parseInt(document.getElementById('price').value) || 0;
             const now = new Date();
             const dateStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
             
             beerData.count += change;
             if (beerData.count < 0) beerData.count = 0;
             
+            beerData.totalCost += change * price;
+            if (beerData.totalCost < 0) beerData.totalCost = 0;
+            
             beerData.history.unshift({
                 date: dateStr,
-                change: change
+                change: change,
+                price: price,
+                timestamp: now.getTime()
             });
+            
+            // Сохраняем текущую цену
+            beerData.price = price;
             
             // Сохраняем в localStorage
             localStorage.setItem('beerData', JSON.stringify(beerData));
             
             updateCounter();
             updateHistory();
+            updateStats();
         }
 
         // Функция сброса
         function resetCounter() {
-            if (confirm("Точно сбросить счетчик?")) {
-                beerData = { count: 0, history: [] };
+            if (confirm("Точно сбросить все данные?")) {
+                beerData = { 
+                    count: 0, 
+                    totalCost: 0, 
+                    price: 100,
+                    history: [], 
+                    dailyStats: {}, 
+                    monthlyStats: {} 
+                };
+                document.getElementById('price').value = 100;
                 localStorage.setItem('beerData', JSON.stringify(beerData));
                 updateCounter();
                 updateHistory();
+                if (beerChart) updateCharts();
             }
         }
 
         // Обновление счетчика
         function updateCounter() {
             document.getElementById('beerCount').textContent = beerData.count;
+            document.getElementById('totalCost').textContent = `Общая сумма: ${beerData.totalCost} ₽`;
+            document.getElementById('price').value = beerData.price;
         }
 
         // Обновление истории
@@ -128,11 +339,20 @@
             
             beerData.history.slice(0, 10).forEach(item => {
                 const li = document.createElement('li');
-                li.innerHTML = `<span class="beer-icon">${item.change > 0 ? '🍺' : '➖'}</span> 
-                               ${item.date}: ${item.change > 0 ? '+' : ''}${item.change}`;
+                const cost = item.change * item.price;
+                li.innerHTML = `
+                    <span class="beer-icon">${item.change > 0 ? '🍺' : '➖'}</span> 
+                    ${item.date}: ${item.change > 0 ? '+' : ''}${item.change} 
+                    (${cost > 0 ? '+' : ''}${cost} ₽)
+                `;
                 historyList.appendChild(li);
             });
         }
+
+        // Инициализация при загрузке
+        updateCounter();
+        updateHistory();
+        updateStats();
     </script>
 </body>
 </html>
