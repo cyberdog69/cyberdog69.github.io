@@ -1,25 +1,32 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Мой пивной график</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-        .beer-form { margin-bottom: 20px; }
-        #beerChart { margin-top: 20px; }
-    </style>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', {'packages':['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            const data = google.visualization.arrayToDataTable([
+                ['Year', 'Sales', 'Expenses'],
+                ['2004',  1000,      400],
+                ['2005',  1170,      460],
+                ['2006',  660,       1120],
+                ['2007',  1030,      540]
+            ]);
+
+            const options = {
+                title: 'Company Performance',
+                curveType: 'function',
+                legend: { position: 'bottom' }
+            };
+
+            const chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+            chart.draw(data, options);
+        }
+    </script>
 </head>
 <body>
-    <h1>Мой пивной дневник</h1>
-    <div class="beer-form">
-        <label for="date">Дата:</label>
-        <input type="date" id="date" required>
-        <label for="beers">Количество пива (банок/бутылок):</label>
-        <input type="number" id="beers" min="0" required>
-        <button onclick="addBeer()">Добавить</button>
-    </div>
-    <canvas id="beerChart"></canvas>
-
-    <script src="app.js"></script>
+    <div id="curve_chart" style="width: 900px; height: 500px"></div>
 </body>
 </html>
