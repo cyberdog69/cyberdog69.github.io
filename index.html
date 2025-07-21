@@ -1,16 +1,25 @@
+<!DOCTYPE html>
 <html>
- <head>
-  <title>T BIG PENIS</title>
- </head>
- <body>
-<img src="tbigpenis.jpg" />
+<head>
+    <title>Мой пивной график</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .beer-form { margin-bottom: 20px; }
+        #beerChart { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Мой пивной дневник</h1>
+    <div class="beer-form">
+        <label for="date">Дата:</label>
+        <input type="date" id="date" required>
+        <label for="beers">Количество пива (банок/бутылок):</label>
+        <input type="number" id="beers" min="0" required>
+        <button onclick="addBeer()">Добавить</button>
+    </div>
+    <canvas id="beerChart"></canvas>
+
+    <script src="app.js"></script>
 </body>
 </html>
-<style>
- p {
-  color: red;
- }
- .text {
-  font-size: 69px;
- }
-</style>
