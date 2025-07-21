@@ -3,137 +3,340 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🍺 Пивной трекер с финансами</title>
+    <title>🍺 YEN Beer Tracker beta </title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        :root {
+            --bg-color: #121212;
+            --card-color: #1e1e1e;
+            --accent-color: #ff9800;
+            --text-primary: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --positive-color: #4caf50;
+            --negative-color: #f44336;
+            --chart-beer: rgba(255, 165, 0, 0.8);
+            --chart-cost: rgba(100, 220, 220, 0.8);
+        }
+        
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
             margin: 0;
             padding: 20px;
-            background-color: #f5f5f5;
+            min-height: 100vh;
         }
+        
         .container {
             max-width: 800px;
             margin: 0 auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background: var(--card-color);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
+        
         h1 {
-            color: #ff9800;
+            color: var(--accent-color);
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 2.2em;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
+        
+        .counter-section {
+            background: rgba(30, 30, 30, 0.7);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid #333;
+        }
+        
         .counter {
-            font-size: 48px;
+            font-size: 3.5em;
+            font-weight: bold;
+            text-align: center;
+            margin: 15px 0;
+            color: var(--accent-color);
+            text-shadow: 0 2px 8px rgba(255, 152, 0, 0.4);
+        }
+        
+        .total-cost {
+            font-size: 1.5em;
+            text-align: center;
+            color: var(--text-primary);
+            margin: 10px 0;
+        }
+        
+        .input-group {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        input {
+            padding: 12px 15px;
+            width: 120px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1em;
+            text-align: center;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.2);
+        }
+        
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
             margin: 20px 0;
         }
-        #beerCount {
-            color: #ff5722;
-        }
-        #totalCost {
-            color: #4caf50;
-            font-size: 24px;
-            margin: 10px 0;
-        }
-        .input-group {
-            margin: 15px 0;
-        }
-        input {
-            padding: 8px;
-            width: 80px;
-            margin-right: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
+        
         button {
-            background: #4caf50;
-            color: white;
+            padding: 12px 25px;
+            font-size: 1.1em;
+            border-radius: 8px;
             border: none;
-            padding: 10px 20px;
-            font-size: 16px;
-            margin: 5px;
-            border-radius: 5px;
             cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
+        
         button:hover {
-            background: #388e3c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
-        button.reset {
-            background: #f44336;
+        
+        button:active {
+            transform: translateY(0);
         }
-        button.reset:hover {
-            background: #d32f2f;
+        
+        .btn-add {
+            background: var(--positive-color);
+            color: white;
         }
+        
+        .btn-remove {
+            background: #f57c00;
+            color: white;
+        }
+        
+        .btn-reset {
+            background: var(--negative-color);
+            color: white;
+        }
+        
+        .btn-tab {
+            background: #333;
+            color: var(--text-primary);
+        }
+        
+        .btn-tab.active {
+            background: var(--accent-color);
+            color: #121212;
+        }
+        
+        .stats-cards {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .stat-card {
+            background: #252525;
+            border-radius: 10px;
+            padding: 15px;
+            min-width: 120px;
+            text-align: center;
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        .stat-card h3 {
+            margin: 0 0 8px 0;
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+        
+        .stat-card p {
+            margin: 0;
+            font-size: 1.4em;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+        
         .chart-container {
-            margin: 30px 0;
+            background: #252525;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 25px 0;
+            position: relative;
             height: 300px;
         }
+        
         .history {
-            margin-top: 20px;
-            text-align: left;
+            background: #252525;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 25px;
         }
-        .beer-icon {
-            font-size: 30px;
-            margin-right: 10px;
+        
+        .history h2 {
+            margin-top: 0;
+            color: var(--accent-color);
+            border-bottom: 1px solid #444;
+            padding-bottom: 10px;
         }
-        .tabs {
+        
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .history-item {
             display: flex;
-            margin-bottom: 20px;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #333;
+            align-items: center;
         }
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            background: #ddd;
-            margin-right: 5px;
-            border-radius: 5px 5px 0 0;
+        
+        .history-item:last-child {
+            border-bottom: none;
         }
-        .tab.active {
-            background: #4caf50;
+        
+        .history-icon {
+            font-size: 1.5em;
+            margin-right: 15px;
+        }
+        
+        .history-details {
+            flex-grow: 1;
+        }
+        
+        .history-amount {
+            font-weight: bold;
             color: white;
         }
-        .cost-info {
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
+        
+        .history-cost {
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+        
+        .history-date {
+            color: var(--text-secondary);
+            font-size: 0.8em;
+        }
+        
+        /* Полоса прокрутки */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #252525;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 4px;
+        }
+        
+        /* Анимации */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .container {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .counter {
+                font-size: 2.5em;
+            }
+            
+            button {
+                padding: 10px 15px;
+                font-size: 1em;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🍺 Пивной трекер с финансами</h1>
+        <h1>🍺 Dark Beer Tracker</h1>
         
         <div class="tabs">
-            <div class="tab active" onclick="showTab('counter')">Счетчик</div>
-            <div class="tab" onclick="showTab('stats')">Статистика</div>
+            <button class="btn-tab active" onclick="showTab('counter')">Счетчик</button>
+            <button class="btn-tab" onclick="showTab('stats')">Статистика</button>
         </div>
         
         <div id="counterTab">
-            <div class="counter">
-                <div id="beerCount">0</div>
-                <div id="totalCost">Общая сумма: 0 ₽</div>
-            </div>
-            
-            <div class="input-group">
-                <label for="price">Цена за пиво (₽):</label>
-                <input type="number" id="price" min="0" value="100">
-            </div>
-            
-            <div>
-                <button onclick="addBeer(1)">+1 Пиво</button>
-                <button onclick="addBeer(-1)">-1 Пиво</button>
-                <button class="reset" onclick="resetCounter()">Сбросить всё</button>
-            </div>
-            
-            <div class="cost-info">
-                <p>Сегодня: <span id="todayCost">0</span> ₽</p>
-                <p>В этом месяце: <span id="monthCost">0</span> ₽</p>
+            <div class="counter-section">
+                <div class="counter" id="beerCount">0</div>
+                <div class="total-cost" id="totalCost">Общая сумма: 0 ₽</div>
+                
+                <div class="input-group">
+                    <label for="price">Цена за пиво:</label>
+                    <input type="number" id="price" min="0" value="100" placeholder="₽">
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn-add" onclick="addBeer(1)">
+                        <span>🍺</span> +1 Пиво
+                    </button>
+                    <button class="btn-remove" onclick="addBeer(-1)">
+                        <span>➖</span> -1 Пиво
+                    </button>
+                    <button class="btn-reset" onclick="resetCounter()">
+                        <span>🗑️</span> Сбросить
+                    </button>
+                </div>
+                
+                <div class="stats-cards">
+                    <div class="stat-card">
+                        <h3>Сегодня</h3>
+                        <p id="todayCost">0 ₽</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Этот месяц</h3>
+                        <p id="monthCost">0 ₽</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Среднее/день</h3>
+                        <p id="avgDaily">0 ₽</p>
+                    </div>
+                </div>
             </div>
             
             <div class="history">
-                <h3>Последние изменения:</h3>
-                <ul id="historyList"></ul>
+                <h2>Последние операции</h2>
+                <div class="history-list" id="historyList"></div>
             </div>
         </div>
         
@@ -144,7 +347,11 @@
             <div class="chart-container">
                 <canvas id="costChart"></canvas>
             </div>
-            <button onclick="updateCharts()">Обновить графики</button>
+            <div class="button-group">
+                <button class="btn-add" onclick="updateCharts()">
+                    <span>🔄</span> Обновить графики
+                </button>
+            </div>
         </div>
     </div>
 
@@ -155,13 +362,14 @@
             totalCost: 0,
             price: 100,
             history: [],
-            dailyStats: {}, // { "2023-10-01": { count: 3, cost: 300 } }
-            monthlyStats: {} // { "2023-10": { count: 8, cost: 800 } }
+            dailyStats: {},
+            monthlyStats: {}
         };
 
         // Инициализация графиков
         let beerChart, costChart;
         function initCharts() {
+            // График потребления пива
             const beerCtx = document.getElementById('beerChart').getContext('2d');
             beerChart = new Chart(beerCtx, {
                 type: 'bar',
@@ -170,17 +378,35 @@
                     datasets: [{
                         label: 'Пива за день',
                         data: [],
-                        backgroundColor: 'rgba(255, 165, 0, 0.7)',
+                        backgroundColor: 'rgba(255, 165, 0, 0.8)',
                         borderColor: 'rgba(255, 165, 0, 1)',
-                        borderWidth: 1
+                        borderWidth: 1,
+                        borderRadius: 4
                     }]
                 },
                 options: {
                     responsive: true,
-                    scales: { y: { beginAtZero: true } }
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#e0e0e0' }
+                        }
+                    },
+                    scales: { 
+                        y: { 
+                            beginAtZero: true,
+                            ticks: { color: '#a0a0a0' },
+                            grid: { color: '#333' }
+                        },
+                        x: {
+                            ticks: { color: '#a0a0a0' },
+                            grid: { color: '#333' }
+                        }
+                    }
                 }
             });
 
+            // График затрат
             const costCtx = document.getElementById('costChart').getContext('2d');
             costChart = new Chart(costCtx, {
                 type: 'line',
@@ -189,15 +415,32 @@
                     datasets: [{
                         label: 'Затраты (₽)',
                         data: [],
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(100, 220, 220, 0.2)',
+                        borderColor: 'rgba(100, 220, 220, 1)',
                         borderWidth: 2,
-                        tension: 0.1
+                        tension: 0.1,
+                        fill: true
                     }]
                 },
                 options: {
                     responsive: true,
-                    scales: { y: { beginAtZero: true } }
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#e0e0e0' }
+                        }
+                    },
+                    scales: { 
+                        y: { 
+                            beginAtZero: true,
+                            ticks: { color: '#a0a0a0' },
+                            grid: { color: '#333' }
+                        },
+                        x: {
+                            ticks: { color: '#a0a0a0' },
+                            grid: { color: '#333' }
+                        }
+                    }
                 }
             });
 
@@ -248,6 +491,21 @@
             
             localStorage.setItem('beerData', JSON.stringify(beerData));
             updateTodayCost();
+            calculateAverages();
+        }
+
+        // Расчет средних значений
+        function calculateAverages() {
+            const today = new Date().toISOString().split('T')[0];
+            const month = new Date().toISOString().substr(0, 7);
+            
+            // Среднее за день (по текущему месяцу)
+            const daysInMonth = Object.keys(beerData.dailyStats)
+                .filter(date => date.startsWith(month))
+                .length || 1;
+            
+            const avgDaily = Math.round((beerData.monthlyStats[month]?.cost || 0) / daysInMonth);
+            document.getElementById('avgDaily').textContent = `${avgDaily} ₽`;
         }
 
         // Обновление стоимости за сегодня/месяц
@@ -256,20 +514,20 @@
             const month = new Date().toISOString().substr(0, 7);
             
             document.getElementById('todayCost').textContent = 
-                beerData.dailyStats[today]?.cost || 0;
+                beerData.dailyStats[today]?.cost || 0 + ' ₽';
             
             document.getElementById('monthCost').textContent = 
-                beerData.monthlyStats[month]?.cost || 0;
+                beerData.monthlyStats[month]?.cost || 0 + ' ₽';
         }
 
         // Переключение вкладок
         function showTab(tabName) {
             document.getElementById('counterTab').style.display = 'none';
             document.getElementById('statsTab').style.display = 'none';
-            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.btn-tab').forEach(tab => tab.classList.remove('active'));
             
             document.getElementById(tabName + 'Tab').style.display = 'block';
-            document.querySelector(`.tab[onclick="showTab('${tabName}')"]`).classList.add('active');
+            document.querySelector(`.btn-tab[onclick="showTab('${tabName}')"]`).classList.add('active');
             
             if (tabName === 'stats' && !beerChart) {
                 initCharts();
@@ -280,7 +538,12 @@
         function addBeer(change) {
             const price = parseInt(document.getElementById('price').value) || 0;
             const now = new Date();
-            const dateStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+            const dateStr = now.toLocaleDateString('ru-RU', {
+                day: 'numeric',
+                month: 'short',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
             
             beerData.count += change;
             if (beerData.count < 0) beerData.count = 0;
@@ -308,7 +571,7 @@
 
         // Функция сброса
         function resetCounter() {
-            if (confirm("Точно сбросить все данные?")) {
+            if (confirm("Точно сбросить все данные? Это действие нельзя отменить!")) {
                 beerData = { 
                     count: 0, 
                     totalCost: 0, 
@@ -337,15 +600,25 @@
             const historyList = document.getElementById('historyList');
             historyList.innerHTML = '';
             
-            beerData.history.slice(0, 10).forEach(item => {
-                const li = document.createElement('li');
+            beerData.history.slice(0, 15).forEach(item => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'history-item';
+                
                 const cost = item.change * item.price;
-                li.innerHTML = `
-                    <span class="beer-icon">${item.change > 0 ? '🍺' : '➖'}</span> 
-                    ${item.date}: ${item.change > 0 ? '+' : ''}${item.change} 
-                    (${cost > 0 ? '+' : ''}${cost} ₽)
+                const sign = item.change > 0 ? '+' : '';
+                
+                itemEl.innerHTML = `
+                    <div style="display: flex; align-items: center;">
+                        <span class="history-icon">${item.change > 0 ? '🍺' : '➖'}</span>
+                        <div class="history-details">
+                            <div class="history-amount">${sign}${item.change} пиво</div>
+                            <div class="history-cost">${sign}${cost} ₽ (${item.price} ₽/шт)</div>
+                        </div>
+                    </div>
+                    <div class="history-date">${item.date}</div>
                 `;
-                historyList.appendChild(li);
+                
+                historyList.appendChild(itemEl);
             });
         }
 
