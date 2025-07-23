@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YEN LIFE TRACKER v4.2.1 BETA (₽ Edition)</title>
+    <title>YEN LIFE TRACKER v4.4.0 BETA (₽)</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* ██ SAKURA FUTURISM DESIGN ██ */
@@ -47,32 +47,7 @@
             margin-bottom: 30px;
         }
         
-        /* ██ ВКЛАДКИ ██ */
-        .tabs {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        
-        .tab {
-            padding: 12px 25px;
-            background: rgba(5, 217, 232, 0.1);
-            border: 1px solid var(--cyber-aqua);
-            color: var(--cyber-aqua);
-            cursor: pointer;
-            transition: all 0.3s;
-            border-radius: 4px;
-            font-weight: 600;
-        }
-        
-        .tab.active {
-            background: rgba(255, 42, 109, 0.3);
-            border-color: var(--neon-pink);
-        }
-        
-        /* ██ ФОРМЫ (УЛУЧШЕННЫЕ) ██ */
+        /* ██ ФОРМЫ ██ */
         .input-section {
             background: rgba(0, 0, 0, 0.3);
             padding: 20px;
@@ -129,9 +104,10 @@
             transform: translateY(-2px);
         }
         
-        .btn-reset {
+        .btn-admin {
             border-color: var(--neon-pink);
             color: var(--neon-pink);
+            margin-top: 30px;
         }
         
         /* ██ ИСТОРИЯ ██ */
@@ -140,6 +116,7 @@
             padding: 20px;
             border-radius: 8px;
             border: 1px solid rgba(255, 42, 109, 0.3);
+            margin-bottom: 30px;
         }
         
         .history-item {
@@ -178,6 +155,45 @@
             border: 1px solid rgba(5, 217, 232, 0.3);
         }
         
+        /* ██ АДМИНКА КАТЕГОРИЙ ██ */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: var(--void);
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid var(--neon-pink);
+        }
+        
+        .modal-title {
+            color: var(--cyber-aqua);
+            margin-top: 0;
+            text-align: center;
+        }
+        
+        .category-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+        
         /* ██ АНИМАЦИЯ ЛЕПЕСТКОВ ██ */
         @keyframes petal-fall {
             to { transform: translateY(100vh) rotate(360deg); }
@@ -199,122 +215,74 @@
     
     <!-- Основной контейнер -->
     <div class="container">
-        <h1>YEN LIFE TRACKER <span style="font-size: 0.6em; color: var(--cyber-aqua)">v4.2.1 BETA (₽)</span></h1>
+        <h1>YEN LIFE TRACKER <span style="font-size: 0.6em; color: var(--cyber-aqua)">v4.4.0 BETA (₽)</span></h1>
         
-        <!-- Вкладки -->
-        <div class="tabs">
-            <div class="tab active" data-tab="beer">🍺 ПИВО</div>
-            <div class="tab" data-tab="money">💸 РАСХОДЫ</div>
-            <div class="tab" data-tab="stats">📊 СТАТИСТИКА</div>
-        </div>
-        
-        <!-- Вкладка Пиво -->
-        <div id="beerTab" class="tab-content active">
-            <div class="input-section">
-                <h3 style="color: var(--neon-pink); margin-top: 0;">НОВАЯ ЗАПИСЬ</h3>
-                
-                <div class="input-group">
-                    <label for="beerAmount">Количество (шт):</label>
-                    <input type="number" id="beerAmount" placeholder="2" min="1">
-                </div>
-                
-                <div class="input-group">
-                    <label for="beerPrice">Цена за шт (₽):</label>
-                    <input type="number" id="beerPrice" placeholder="150" min="0">
-                </div>
-                
-                <div class="input-group">
-                    <label for="beerDate">Дата и время:</label>
-                    <input type="datetime-local" id="beerDate">
-                </div>
-                
-                <div class="input-group">
-                    <label for="beerNote">Примечание:</label>
-                    <textarea id="beerNote" placeholder="Сорт, место и т.д." rows="2"></textarea>
-                </div>
-                
-                <button class="btn" id="addBeerBtn">➕ ДОБАВИТЬ</button>
+        <!-- Форма добавления расходов -->
+        <div class="input-section">
+            <h3 style="color: var(--neon-pink); margin-top: 0;">НОВАЯ ТРАТА</h3>
+            
+            <div class="input-group">
+                <label for="expenseAmount">Сумма (₽):</label>
+                <input type="number" id="expenseAmount" placeholder="1000" min="1">
             </div>
             
-            <div class="history-section">
-                <h3 style="color: var(--neon-pink);">ИСТОРИЯ</h3>
-                <div id="beerHistory" class="history-list">
-                    <!-- Пример записи -->
-                    <div class="history-item">
-                        <div>
-                            <strong>🍺 2 x 150₽</strong>
-                            <div style="font-size: 0.9em; color: #aaa;">Сегодня, 20:30 • Жигулевское</div>
-                        </div>
-                        <div class="item-actions">
-                            <button title="Редактировать">✏️</button>
-                            <button title="Удалить">🗑️</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Вкладка Расходы -->
-        <div id="moneyTab" class="tab-content">
-            <div class="input-section">
-                <h3 style="color: var(--neon-pink); margin-top: 0;">НОВАЯ ТРАТА</h3>
-                
-                <div class="input-group">
-                    <label for="expenseAmount">Сумма (₽):</label>
-                    <input type="number" id="expenseAmount" placeholder="1000" min="1">
-                </div>
-                
-                <div class="input-group">
-                    <label for="expenseCategory">Категория:</label>
-                    <select id="expenseCategory">
-                        <option value="food">🍜 Еда</option>
-                        <option value="transport">🚇 Транспорт</option>
-                        <option value="entertainment">🎮 Развлечения</option>
-                        <option value="other">❔ Другое</option>
-                    </select>
-                </div>
-                
-                <div class="input-group">
-                    <label for="expenseDate">Дата:</label>
-                    <input type="date" id="expenseDate">
-                </div>
-                
-                <div class="input-group">
-                    <label for="expenseNote">Описание:</label>
-                    <textarea id="expenseNote" placeholder="На что потрачены деньги?" rows="2"></textarea>
-                </div>
-                
-                <button class="btn" id="addExpenseBtn">💾 СОХРАНИТЬ</button>
+            <div class="input-group">
+                <label for="expenseCategory">Категория:</label>
+                <select id="expenseCategory">
+                    <!-- Категории будут загружаться из JS -->
+                </select>
             </div>
             
-            <div class="history-section">
-                <h3 style="color: var(--neon-pink);">ПОСЛЕДНИЕ ОПЕРАЦИИ</h3>
-                <div id="expenseHistory" class="history-list">
-                    <!-- Пример записи -->
-                    <div class="history-item">
-                        <div>
-                            <strong>🍜 Еда: 500₽</strong>
-                            <div style="font-size: 0.9em; color: #aaa;">Вчера • Магнит</div>
-                        </div>
-                        <div class="item-actions">
-                            <button title="Редактировать">✏️</button>
-                            <button title="Удалить">🗑️</button>
-                        </div>
-                    </div>
-                </div>
+            <div class="input-group">
+                <label for="expenseDate">Дата:</label>
+                <input type="date" id="expenseDate">
+            </div>
+            
+            <div class="input-group">
+                <label for="expenseNote">Описание:</label>
+                <textarea id="expenseNote" placeholder="На что потрачены деньги?" rows="2"></textarea>
+            </div>
+            
+            <button class="btn" id="addExpenseBtn">💾 СОХРАНИТЬ</button>
+        </div>
+        
+        <!-- История операций -->
+        <div class="history-section">
+            <h3 style="color: var(--neon-pink);">ПОСЛЕДНИЕ ОПЕРАЦИИ</h3>
+            <div id="expenseHistory" class="history-list">
+                <!-- Сюда будут добавляться записи -->
             </div>
         </div>
         
-        <!-- Вкладка Статистика -->
-        <div id="statsTab" class="tab-content">
-            <div class="chart-container">
-                <canvas id="beerChart"></canvas>
+        <!-- Графики (бывшая "Статистика") -->
+        <div class="chart-container">
+            <canvas id="moneyChart"></canvas>
+        </div>
+        
+        <!-- Кнопка админки -->
+        <div style="text-align: center;">
+            <button class="btn btn-admin" id="adminBtn">⚙️ УПРАВЛЕНИЕ КАТЕГОРИЯМИ</button>
+        </div>
+    </div>
+    
+    <!-- Модальное окно админки -->
+    <div id="adminModal" class="modal">
+        <div class="modal-content">
+            <h3 class="modal-title">УПРАВЛЕНИЕ КАТЕГОРИЯМИ</h3>
+            
+            <div class="input-group">
+                <label for="newCategoryName">Новая категория:</label>
+                <input type="text" id="newCategoryName" placeholder="Например: Такси">
             </div>
-            <div class="chart-container">
-                <canvas id="moneyChart"></canvas>
+            
+            <button class="btn" id="addCategoryBtn">➕ ДОБАВИТЬ</button>
+            
+            <div id="categoriesList" style="margin-top: 20px;">
+                <!-- Список категорий будет здесь -->
             </div>
-            <div style="text-align: center;">
-                <button class="btn" id="updateChartsBtn">🔄 ОБНОВИТЬ ДАННЫЕ</button>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn btn-admin" onclick="closeModal()">ЗАКРЫТЬ</button>
             </div>
         </div>
     </div>
@@ -322,30 +290,28 @@
     <script>
         // ██ КОНФИГ ██
         const CONFIG = {
-            version: "4.2.1 BETA",
-            currency: "₽"
+            version: "4.4.0 BETA",
+            currency: "₽",
+            categories: [
+                { id: 1, name: "🍜 Еда", icon: "🍜" },
+                { id: 2, name: "🚇 Транспорт", icon: "🚇" },
+                { id: 3, name: "🎮 Развлечения", icon: "🎮" },
+                { id: 4, name: "❔ Другое", icon: "❔" }
+            ],
+            expenses: [
+                { id: 1, amount: 500, categoryId: 1, date: "2023-07-10", note: "Магнит" }
+            ]
         };
         
         // ██ ИНИЦИАЛИЗАЦИЯ ██
         document.addEventListener('DOMContentLoaded', () => {
-            initTabs();
             initPetals();
             initDateTime();
-            loadData();
+            loadCategories();
+            loadExpenses();
+            initAdminPanel();
+            updateCharts();
         });
-        
-        // ██ ЛОГИКА ВКЛАДОК ██
-        function initTabs() {
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', () => {
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                    
-                    tab.classList.add('active');
-                    document.getElementById(tab.dataset.tab + 'Tab').classList.add('active');
-                });
-            });
-        }
         
         // ██ АНИМАЦИЯ ЛЕПЕСТКОВ ██
         function initPetals() {
@@ -367,64 +333,159 @@
         function initDateTime() {
             const now = new Date();
             const timezoneOffset = now.getTimezoneOffset() * 60000;
-            const localISOTime = (new Date(now - timezoneOffset)).toISOString().slice(0, 16);
+            const localISOTime = (new Date(now - timezoneOffset)).toISOString().slice(0, 10);
+            document.getElementById('expenseDate').value = localISOTime;
+        }
+        
+        // ██ ЗАГРУЗКА КАТЕГОРИЙ ██
+        function loadCategories() {
+            const select = document.getElementById('expenseCategory');
+            select.innerHTML = '';
             
-            document.getElementById('beerDate').value = localISOTime;
-            document.getElementById('expenseDate').value = localISOTime.split('T')[0];
+            CONFIG.categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.id;
+                option.textContent = category.name;
+                select.appendChild(option);
+            });
         }
         
-        // ██ ЗАГРУЗКА ДАННЫХ (ЗАГЛУШКА) ██
-        function loadData() {
-            console.log(`${CONFIG.version} loaded | Валюта: ${CONFIG.currency}`);
+        // ██ ЗАГРУЗКА РАСХОДОВ ██
+        function loadExpenses() {
+            const historyContainer = document.getElementById('expenseHistory');
+            historyContainer.innerHTML = '';
+            
+            CONFIG.expenses.forEach(expense => {
+                const category = CONFIG.categories.find(c => c.id === expense.categoryId);
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                item.innerHTML = `
+                    <div>
+                        <strong>${category?.icon || ''} ${category?.name || 'Категория'}: ${expense.amount}${CONFIG.currency}</strong>
+                        <div style="font-size: 0.9em; color: #aaa;">${expense.date} • ${expense.note || ''}</div>
+                    </div>
+                    <div class="item-actions">
+                        <button title="Редактировать">✏️</button>
+                        <button title="Удалить">🗑️</button>
+                    </div>
+                `;
+                historyContainer.appendChild(item);
+            });
         }
         
-        // ██ ГРАФИКИ (ЗАГЛУШКА) ██
-        let beerChart, moneyChart;
+        // ██ АДМИНКА КАТЕГОРИЙ ██
+        function initAdminPanel() {
+            const adminBtn = document.getElementById('adminBtn');
+            const modal = document.getElementById('adminModal');
+            const addCategoryBtn = document.getElementById('addCategoryBtn');
+            
+            adminBtn.addEventListener('click', () => {
+                modal.style.display = 'flex';
+                renderCategoriesList();
+            });
+            
+            addCategoryBtn.addEventListener('click', () => {
+                const name = document.getElementById('newCategoryName').value.trim();
+                if (name) {
+                    const newCategory = {
+                        id: Date.now(),
+                        name: name,
+                        icon: "❔"
+                    };
+                    CONFIG.categories.push(newCategory);
+                    renderCategoriesList();
+                    loadCategories();
+                    document.getElementById('newCategoryName').value = '';
+                }
+            });
+        }
         
-        document.getElementById('updateChartsBtn')?.addEventListener('click', () => {
-            updateCharts();
-        });
+        function renderCategoriesList() {
+            const container = document.getElementById('categoriesList');
+            container.innerHTML = '';
+            
+            CONFIG.categories.forEach(category => {
+                const item = document.createElement('div');
+                item.className = 'category-item';
+                item.innerHTML = `
+                    <span>${category.icon} ${category.name}</span>
+                    <div>
+                        <button onclick="editCategory(${category.id})">✏️</button>
+                        <button onclick="deleteCategory(${category.id})">🗑️</button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+        
+        function editCategory(id) {
+            const category = CONFIG.categories.find(c => c.id === id);
+            if (!category) return;
+            
+            const newName = prompt("Новое название категории:", category.name);
+            if (newName) {
+                category.name = newName;
+                renderCategoriesList();
+                loadCategories();
+            }
+        }
+        
+        function deleteCategory(id) {
+            if (confirm("Удалить эту категорию? Привязанные расходы не удалятся.")) {
+                CONFIG.categories = CONFIG.categories.filter(c => c.id !== id);
+                renderCategoriesList();
+                loadCategories();
+            }
+        }
+        
+        function closeModal() {
+            document.getElementById('adminModal').style.display = 'none';
+        }
+        
+        // ██ ГРАФИКИ ██
+        let moneyChart;
         
         function updateCharts() {
-            const ctx1 = document.getElementById('beerChart')?.getContext('2d');
-            const ctx2 = document.getElementById('moneyChart')?.getContext('2d');
+            const ctx = document.getElementById('moneyChart')?.getContext('2d');
             
-            if (ctx1 && !beerChart) {
-                beerChart = new Chart(ctx1, {
-                    type: 'bar',
+            if (ctx) {
+                // Группируем расходы по категориям
+                const categoryData = CONFIG.categories.map(category => {
+                    const expenses = CONFIG.expenses.filter(e => e.categoryId === category.id);
+                    const total = expenses.reduce((sum, e) => sum + e.amount, 0);
+                    return {
+                        category: category.name,
+                        total: total,
+                        color: getRandomColor()
+                    };
+                });
+                
+                if (moneyChart) moneyChart.destroy();
+                
+                moneyChart = new Chart(ctx, {
+                    type: 'doughnut',
                     data: {
-                        labels: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
+                        labels: categoryData.map(item => item.category),
                         datasets: [{
-                            label: `Пиво (шт)`,
-                            data: [3, 5, 2, 4, 6, 7, 4],
-                            backgroundColor: 'rgba(255, 42, 109, 0.7)'
+                            data: categoryData.map(item => item.total),
+                            backgroundColor: categoryData.map(item => item.color),
+                            borderWidth: 1
                         }]
                     },
                     options: {
                         responsive: true,
-                        scales: { y: { beginAtZero: true } }
+                        plugins: {
+                            legend: {
+                                position: 'right'
+                            }
+                        }
                     }
                 });
             }
-            
-            if (ctx2 && !moneyChart) {
-                moneyChart = new Chart(ctx2, {
-                    type: 'line',
-                    data: {
-                        labels: ['Янв', 'Фев', 'Мар', 'Апр', 'Май'],
-                        datasets: [{
-                            label: `Расходы (${CONFIG.currency})`,
-                            data: [15000, 12000, 18000, 14000, 16000],
-                            borderColor: 'rgba(5, 217, 232, 1)',
-                            fill: true,
-                            tension: 0.1
-                        }]
-                    },
-                    options: {
-                        responsive: true
-                    }
-                });
-            }
+        }
+        
+        function getRandomColor() {
+            return `hsl(${Math.random() * 360}, 70%, 50%)`;
         }
     </script>
 </body>
