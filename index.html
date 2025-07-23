@@ -3,629 +3,429 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🍺 YEN Beer Tracker beta </title>
+    <title>YEN LIFE TRACKER v4.2.1 BETA (₽ Edition)</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* ██ SAKURA FUTURISM DESIGN ██ */
         :root {
-            --bg-color: #121212;
-            --card-color: #1e1e1e;
-            --accent-color: #ff9800;
-            --text-primary: #e0e0e0;
-            --text-secondary: #a0a0a0;
-            --positive-color: #4caf50;
-            --negative-color: #f44336;
-            --chart-beer: rgba(255, 165, 0, 0.8);
-            --chart-cost: rgba(100, 220, 220, 0.8);
+            --neon-pink: #ff2a6d;
+            --cyber-aqua: #05d9e8;
+            --void: #0d0221;
+            --grid-size: 30px;
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-primary);
             margin: 0;
-            padding: 20px;
-            min-height: 100vh;
+            background: var(--void);
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            /* Кибер-сетка */
+            background-image: 
+                linear-gradient(rgba(5, 217, 232, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(5, 217, 232, 0.1) 1px, transparent 1px);
+            background-size: var(--grid-size) var(--grid-size);
+            overflow-x: hidden;
         }
         
         .container {
             max-width: 800px;
-            margin: 0 auto;
-            background: var(--card-color);
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            margin: 20px auto;
+            padding: 30px;
+            background: rgba(13, 2, 33, 0.9);
+            border: 1px solid var(--neon-pink);
+            box-shadow: 0 0 30px rgba(255, 42, 109, 0.3);
+            position: relative;
         }
         
         h1 {
-            color: var(--accent-color);
+            background: linear-gradient(90deg, var(--neon-pink), var(--cyber-aqua));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             text-align: center;
-            margin-bottom: 25px;
-            font-size: 2.2em;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            font-size: 2.5em;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
         }
         
-        .counter-section {
-            background: rgba(30, 30, 30, 0.7);
-            border-radius: 12px;
+        /* ██ ВКЛАДКИ ██ */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .tab {
+            padding: 12px 25px;
+            background: rgba(5, 217, 232, 0.1);
+            border: 1px solid var(--cyber-aqua);
+            color: var(--cyber-aqua);
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        .tab.active {
+            background: rgba(255, 42, 109, 0.3);
+            border-color: var(--neon-pink);
+        }
+        
+        /* ██ ФОРМЫ (УЛУЧШЕННЫЕ) ██ */
+        .input-section {
+            background: rgba(0, 0, 0, 0.3);
             padding: 20px;
-            margin-bottom: 25px;
-            border: 1px solid #333;
-        }
-        
-        .counter {
-            font-size: 3.5em;
-            font-weight: bold;
-            text-align: center;
-            margin: 15px 0;
-            color: var(--accent-color);
-            text-shadow: 0 2px 8px rgba(255, 152, 0, 0.4);
-        }
-        
-        .total-cost {
-            font-size: 1.5em;
-            text-align: center;
-            color: var(--text-primary);
-            margin: 10px 0;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(5, 217, 232, 0.3);
         }
         
         .input-group {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 20px 0;
-            gap: 15px;
-            flex-wrap: wrap;
+            margin-bottom: 15px;
         }
         
-        input {
-            padding: 12px 15px;
-            width: 120px;
-            background: #2a2a2a;
-            border: 1px solid #444;
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-size: 1em;
-            text-align: center;
-        }
-        
-        input:focus {
-            outline: none;
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.2);
-        }
-        
-        .button-group {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin: 20px 0;
-        }
-        
-        button {
-            padding: 12px 25px;
-            font-size: 1.1em;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--cyber-aqua);
             font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
         }
         
-        button:hover {
+        input, select, textarea {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--cyber-aqua);
+            color: white;
+            padding: 12px;
+            width: 100%;
+            margin: 5px 0;
+            font-family: 'Rajdhani';
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--neon-pink);
+            box-shadow: 0 0 10px rgba(255, 42, 109, 0.5);
+        }
+        
+        /* ██ КНОПКИ ██ */
+        .btn {
+            background: transparent;
+            border: 1px solid var(--cyber-aqua);
+            color: var(--cyber-aqua);
+            padding: 12px 25px;
+            margin: 10px 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            border-radius: 6px;
+        }
+        
+        .btn:hover {
+            background: rgba(5, 217, 232, 0.2);
+            text-shadow: 0 0 10px var(--cyber-aqua);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-        
-        button:active {
-            transform: translateY(0);
-        }
-        
-        .btn-add {
-            background: var(--positive-color);
-            color: white;
-        }
-        
-        .btn-remove {
-            background: #f57c00;
-            color: white;
         }
         
         .btn-reset {
-            background: var(--negative-color);
-            color: white;
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
         }
         
-        .btn-tab {
-            background: #333;
-            color: var(--text-primary);
-        }
-        
-        .btn-tab.active {
-            background: var(--accent-color);
-            color: #121212;
-        }
-        
-        .stats-cards {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin: 20px 0;
-            flex-wrap: wrap;
-        }
-        
-        .stat-card {
-            background: #252525;
-            border-radius: 10px;
-            padding: 15px;
-            min-width: 120px;
-            text-align: center;
-            border-left: 4px solid var(--accent-color);
-        }
-        
-        .stat-card h3 {
-            margin: 0 0 8px 0;
-            color: var(--text-secondary);
-            font-size: 0.9em;
-        }
-        
-        .stat-card p {
-            margin: 0;
-            font-size: 1.4em;
-            font-weight: bold;
-            color: var(--accent-color);
-        }
-        
-        .chart-container {
-            background: #252525;
-            border-radius: 12px;
-            padding: 15px;
-            margin: 25px 0;
-            position: relative;
-            height: 300px;
-        }
-        
-        .history {
-            background: #252525;
-            border-radius: 12px;
+        /* ██ ИСТОРИЯ ██ */
+        .history-section {
+            background: rgba(0, 0, 0, 0.3);
             padding: 20px;
-            margin-top: 25px;
-        }
-        
-        .history h2 {
-            margin-top: 0;
-            color: var(--accent-color);
-            border-bottom: 1px solid #444;
-            padding-bottom: 10px;
-        }
-        
-        .history-list {
-            max-height: 300px;
-            overflow-y: auto;
-            padding-right: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 42, 109, 0.3);
         }
         
         .history-item {
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 3px solid var(--neon-pink);
+            background: rgba(255, 42, 109, 0.05);
             display: flex;
             justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #333;
             align-items: center;
-        }
-        
-        .history-item:last-child {
-            border-bottom: none;
-        }
-        
-        .history-icon {
-            font-size: 1.5em;
-            margin-right: 15px;
-        }
-        
-        .history-details {
-            flex-grow: 1;
-        }
-        
-        .history-amount {
-            font-weight: bold;
-            color: white;
-        }
-        
-        .history-cost {
-            color: var(--text-secondary);
-            font-size: 0.9em;
-        }
-        
-        .history-date {
-            color: var(--text-secondary);
-            font-size: 0.8em;
-        }
-        
-        /* Полоса прокрутки */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #252525;
+            transition: all 0.3s;
             border-radius: 4px;
         }
         
-        ::-webkit-scrollbar-thumb {
-            background: #444;
-            border-radius: 4px;
+        .history-item:hover {
+            background: rgba(255, 42, 109, 0.15);
         }
         
-        /* Анимации */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .item-actions button {
+            background: none;
+            border: none;
+            color: var(--cyber-aqua);
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 1.2em;
         }
         
-        .container {
-            animation: fadeIn 0.5s ease-out;
+        /* ██ ГРАФИКИ ██ */
+        .chart-container {
+            height: 300px;
+            margin: 30px 0;
+            position: relative;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid rgba(5, 217, 232, 0.3);
         }
         
-        /* Адаптивность */
-        @media (max-width: 600px) {
-            .container {
-                padding: 15px;
-            }
-            
-            .counter {
-                font-size: 2.5em;
-            }
-            
-            button {
-                padding: 10px 15px;
-                font-size: 1em;
-            }
+        /* ██ АНИМАЦИЯ ЛЕПЕСТКОВ ██ */
+        @keyframes petal-fall {
+            to { transform: translateY(100vh) rotate(360deg); }
+        }
+        
+        .petal {
+            position: fixed;
+            z-index: -1;
+            animation: petal-fall linear infinite;
+            user-select: none;
+            pointer-events: none;
         }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Лепестки сакуры -->
+    <div id="petals-container"></div>
+    
+    <!-- Основной контейнер -->
     <div class="container">
-        <h1>🍺 Yen Beer Tracker</h1>
+        <h1>YEN LIFE TRACKER <span style="font-size: 0.6em; color: var(--cyber-aqua)">v4.2.1 BETA (₽)</span></h1>
         
+        <!-- Вкладки -->
         <div class="tabs">
-            <button class="btn-tab active" onclick="showTab('counter')">Счетчик</button>
-            <button class="btn-tab" onclick="showTab('stats')">Статистика</button>
+            <div class="tab active" data-tab="beer">🍺 ПИВО</div>
+            <div class="tab" data-tab="money">💸 РАСХОДЫ</div>
+            <div class="tab" data-tab="stats">📊 СТАТИСТИКА</div>
         </div>
         
-        <div id="counterTab">
-            <div class="counter-section">
-                <div class="counter" id="beerCount">0</div>
-                <div class="total-cost" id="totalCost">Общая сумма: 0 ₽</div>
+        <!-- Вкладка Пиво -->
+        <div id="beerTab" class="tab-content active">
+            <div class="input-section">
+                <h3 style="color: var(--neon-pink); margin-top: 0;">НОВАЯ ЗАПИСЬ</h3>
                 
                 <div class="input-group">
-                    <label for="price">Цена за пиво:</label>
-                    <input type="number" id="price" min="0" value="100" placeholder="₽">
+                    <label for="beerAmount">Количество (шт):</label>
+                    <input type="number" id="beerAmount" placeholder="2" min="1">
                 </div>
                 
-                <div class="button-group">
-                    <button class="btn-add" onclick="addBeer(1)">
-                        <span>🍺</span> +1 Пиво
-                    </button>
-                    <button class="btn-remove" onclick="addBeer(-1)">
-                        <span>➖</span> -1 Пиво
-                    </button>
-                    <button class="btn-reset" onclick="resetCounter()">
-                        <span>🗑️</span> Сбросить
-                    </button>
+                <div class="input-group">
+                    <label for="beerPrice">Цена за шт (₽):</label>
+                    <input type="number" id="beerPrice" placeholder="150" min="0">
                 </div>
                 
-                <div class="stats-cards">
-                    <div class="stat-card">
-                        <h3>Сегодня</h3>
-                        <p id="todayCost">0 ₽</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Этот месяц</h3>
-                        <p id="monthCost">0 ₽</p>
-                    </div>
-                    <div class="stat-card">
-                        <h3>Среднее/день</h3>
-                        <p id="avgDaily">0 ₽</p>
-                    </div>
+                <div class="input-group">
+                    <label for="beerDate">Дата и время:</label>
+                    <input type="datetime-local" id="beerDate">
                 </div>
+                
+                <div class="input-group">
+                    <label for="beerNote">Примечание:</label>
+                    <textarea id="beerNote" placeholder="Сорт, место и т.д." rows="2"></textarea>
+                </div>
+                
+                <button class="btn" id="addBeerBtn">➕ ДОБАВИТЬ</button>
             </div>
             
-            <div class="history">
-                <h2>Последние операции</h2>
-                <div class="history-list" id="historyList"></div>
+            <div class="history-section">
+                <h3 style="color: var(--neon-pink);">ИСТОРИЯ</h3>
+                <div id="beerHistory" class="history-list">
+                    <!-- Пример записи -->
+                    <div class="history-item">
+                        <div>
+                            <strong>🍺 2 x 150₽</strong>
+                            <div style="font-size: 0.9em; color: #aaa;">Сегодня, 20:30 • Жигулевское</div>
+                        </div>
+                        <div class="item-actions">
+                            <button title="Редактировать">✏️</button>
+                            <button title="Удалить">🗑️</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         
-        <div id="statsTab" style="display: none;">
+        <!-- Вкладка Расходы -->
+        <div id="moneyTab" class="tab-content">
+            <div class="input-section">
+                <h3 style="color: var(--neon-pink); margin-top: 0;">НОВАЯ ТРАТА</h3>
+                
+                <div class="input-group">
+                    <label for="expenseAmount">Сумма (₽):</label>
+                    <input type="number" id="expenseAmount" placeholder="1000" min="1">
+                </div>
+                
+                <div class="input-group">
+                    <label for="expenseCategory">Категория:</label>
+                    <select id="expenseCategory">
+                        <option value="food">🍜 Еда</option>
+                        <option value="transport">🚇 Транспорт</option>
+                        <option value="entertainment">🎮 Развлечения</option>
+                        <option value="other">❔ Другое</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label for="expenseDate">Дата:</label>
+                    <input type="date" id="expenseDate">
+                </div>
+                
+                <div class="input-group">
+                    <label for="expenseNote">Описание:</label>
+                    <textarea id="expenseNote" placeholder="На что потрачены деньги?" rows="2"></textarea>
+                </div>
+                
+                <button class="btn" id="addExpenseBtn">💾 СОХРАНИТЬ</button>
+            </div>
+            
+            <div class="history-section">
+                <h3 style="color: var(--neon-pink);">ПОСЛЕДНИЕ ОПЕРАЦИИ</h3>
+                <div id="expenseHistory" class="history-list">
+                    <!-- Пример записи -->
+                    <div class="history-item">
+                        <div>
+                            <strong>🍜 Еда: 500₽</strong>
+                            <div style="font-size: 0.9em; color: #aaa;">Вчера • Магнит</div>
+                        </div>
+                        <div class="item-actions">
+                            <button title="Редактировать">✏️</button>
+                            <button title="Удалить">🗑️</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Вкладка Статистика -->
+        <div id="statsTab" class="tab-content">
             <div class="chart-container">
                 <canvas id="beerChart"></canvas>
             </div>
             <div class="chart-container">
-                <canvas id="costChart"></canvas>
+                <canvas id="moneyChart"></canvas>
             </div>
-            <div class="button-group">
-                <button class="btn-add" onclick="updateCharts()">
-                    <span>🔄</span> Обновить графики
-                </button>
+            <div style="text-align: center;">
+                <button class="btn" id="updateChartsBtn">🔄 ОБНОВИТЬ ДАННЫЕ</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Загружаем данные из localStorage
-        let beerData = JSON.parse(localStorage.getItem('beerData')) || {
-            count: 0,
-            totalCost: 0,
-            price: 100,
-            history: [],
-            dailyStats: {},
-            monthlyStats: {}
+        // ██ КОНФИГ ██
+        const CONFIG = {
+            version: "4.2.1 BETA",
+            currency: "₽"
         };
-
-        // Инициализация графиков
-        let beerChart, costChart;
-        function initCharts() {
-            // График потребления пива
-            const beerCtx = document.getElementById('beerChart').getContext('2d');
-            beerChart = new Chart(beerCtx, {
-                type: 'bar',
-                data: { 
-                    labels: [], 
-                    datasets: [{
-                        label: 'Пива за день',
-                        data: [],
-                        backgroundColor: 'rgba(255, 165, 0, 0.8)',
-                        borderColor: 'rgba(255, 165, 0, 1)',
-                        borderWidth: 1,
-                        borderRadius: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            labels: { color: '#e0e0e0' }
-                        }
-                    },
-                    scales: { 
-                        y: { 
-                            beginAtZero: true,
-                            ticks: { color: '#a0a0a0' },
-                            grid: { color: '#333' }
-                        },
-                        x: {
-                            ticks: { color: '#a0a0a0' },
-                            grid: { color: '#333' }
-                        }
-                    }
-                }
+        
+        // ██ ИНИЦИАЛИЗАЦИЯ ██
+        document.addEventListener('DOMContentLoaded', () => {
+            initTabs();
+            initPetals();
+            initDateTime();
+            loadData();
+        });
+        
+        // ██ ЛОГИКА ВКЛАДОК ██
+        function initTabs() {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab + 'Tab').classList.add('active');
+                });
             });
-
-            // График затрат
-            const costCtx = document.getElementById('costChart').getContext('2d');
-            costChart = new Chart(costCtx, {
-                type: 'line',
-                data: { 
-                    labels: [], 
-                    datasets: [{
-                        label: 'Затраты (₽)',
-                        data: [],
-                        backgroundColor: 'rgba(100, 220, 220, 0.2)',
-                        borderColor: 'rgba(100, 220, 220, 1)',
-                        borderWidth: 2,
-                        tension: 0.1,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            labels: { color: '#e0e0e0' }
-                        }
-                    },
-                    scales: { 
-                        y: { 
-                            beginAtZero: true,
-                            ticks: { color: '#a0a0a0' },
-                            grid: { color: '#333' }
-                        },
-                        x: {
-                            ticks: { color: '#a0a0a0' },
-                            grid: { color: '#333' }
-                        }
-                    }
-                }
-            });
-
-            updateCharts();
         }
-
-        // Обновление графиков
-        function updateCharts() {
-            updateStats();
-            
-            const dates = Object.keys(beerData.dailyStats).sort();
-            const beerValues = dates.map(date => beerData.dailyStats[date].count);
-            const costValues = dates.map(date => beerData.dailyStats[date].cost);
-            
-            beerChart.data.labels = dates;
-            beerChart.data.datasets[0].data = beerValues;
-            beerChart.update();
-            
-            costChart.data.labels = dates;
-            costChart.data.datasets[0].data = costValues;
-            costChart.update();
-        }
-
-        // Обновление статистики
-        function updateStats() {
-            beerData.dailyStats = {};
-            beerData.monthlyStats = {};
-            
-            beerData.history.forEach(entry => {
-                const date = new Date(entry.timestamp);
-                const dateKey = date.toISOString().split('T')[0];
-                const monthKey = date.toISOString().substr(0, 7);
-                
-                // Дневная статистика
-                if (!beerData.dailyStats[dateKey]) {
-                    beerData.dailyStats[dateKey] = { count: 0, cost: 0 };
-                }
-                beerData.dailyStats[dateKey].count += entry.change;
-                beerData.dailyStats[dateKey].cost += entry.change * entry.price;
-                
-                // Месячная статистика
-                if (!beerData.monthlyStats[monthKey]) {
-                    beerData.monthlyStats[monthKey] = { count: 0, cost: 0 };
-                }
-                beerData.monthlyStats[monthKey].count += entry.change;
-                beerData.monthlyStats[monthKey].cost += entry.change * entry.price;
-            });
-            
-            localStorage.setItem('beerData', JSON.stringify(beerData));
-            updateTodayCost();
-            calculateAverages();
-        }
-
-        // Расчет средних значений
-        function calculateAverages() {
-            const today = new Date().toISOString().split('T')[0];
-            const month = new Date().toISOString().substr(0, 7);
-            
-            // Среднее за день (по текущему месяцу)
-            const daysInMonth = Object.keys(beerData.dailyStats)
-                .filter(date => date.startsWith(month))
-                .length || 1;
-            
-            const avgDaily = Math.round((beerData.monthlyStats[month]?.cost || 0) / daysInMonth);
-            document.getElementById('avgDaily').textContent = `${avgDaily} ₽`;
-        }
-
-        // Обновление стоимости за сегодня/месяц
-        function updateTodayCost() {
-            const today = new Date().toISOString().split('T')[0];
-            const month = new Date().toISOString().substr(0, 7);
-            
-            document.getElementById('todayCost').textContent = 
-                beerData.dailyStats[today]?.cost || 0 + ' ₽';
-            
-            document.getElementById('monthCost').textContent = 
-                beerData.monthlyStats[month]?.cost || 0 + ' ₽';
-        }
-
-        // Переключение вкладок
-        function showTab(tabName) {
-            document.getElementById('counterTab').style.display = 'none';
-            document.getElementById('statsTab').style.display = 'none';
-            document.querySelectorAll('.btn-tab').forEach(tab => tab.classList.remove('active'));
-            
-            document.getElementById(tabName + 'Tab').style.display = 'block';
-            document.querySelector(`.btn-tab[onclick="showTab('${tabName}')"]`).classList.add('active');
-            
-            if (tabName === 'stats' && !beerChart) {
-                initCharts();
+        
+        // ██ АНИМАЦИЯ ЛЕПЕСТКОВ ██
+        function initPetals() {
+            const petals = ['🌸', '🎴', '❀'];
+            for (let i = 0; i < 15; i++) {
+                const petal = document.createElement('div');
+                petal.className = 'petal';
+                petal.textContent = petals[Math.floor(Math.random() * petals.length)];
+                petal.style.left = Math.random() * 100 + 'vw';
+                petal.style.fontSize = (Math.random() * 20 + 12) + 'px';
+                petal.style.animationDuration = (Math.random() * 10 + 5) + 's';
+                petal.style.animationDelay = Math.random() * 5 + 's';
+                petal.style.opacity = 0.7 + Math.random() * 0.3;
+                document.getElementById('petals-container').appendChild(petal);
             }
         }
-
-        // Функция добавления/удаления пива
-        function addBeer(change) {
-            const price = parseInt(document.getElementById('price').value) || 0;
+        
+        // ██ УСТАНОВКА ДАТЫ ПО УМОЛЧАНИЮ ██
+        function initDateTime() {
             const now = new Date();
-            const dateStr = now.toLocaleDateString('ru-RU', {
-                day: 'numeric',
-                month: 'short',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
+            const timezoneOffset = now.getTimezoneOffset() * 60000;
+            const localISOTime = (new Date(now - timezoneOffset)).toISOString().slice(0, 16);
             
-            beerData.count += change;
-            if (beerData.count < 0) beerData.count = 0;
-            
-            beerData.totalCost += change * price;
-            if (beerData.totalCost < 0) beerData.totalCost = 0;
-            
-            beerData.history.unshift({
-                date: dateStr,
-                change: change,
-                price: price,
-                timestamp: now.getTime()
-            });
-            
-            // Сохраняем текущую цену
-            beerData.price = price;
-            
-            // Сохраняем в localStorage
-            localStorage.setItem('beerData', JSON.stringify(beerData));
-            
-            updateCounter();
-            updateHistory();
-            updateStats();
+            document.getElementById('beerDate').value = localISOTime;
+            document.getElementById('expenseDate').value = localISOTime.split('T')[0];
         }
-
-        // Функция сброса
-        function resetCounter() {
-            if (confirm("Точно сбросить все данные? Это действие нельзя отменить!")) {
-                beerData = { 
-                    count: 0, 
-                    totalCost: 0, 
-                    price: 100,
-                    history: [], 
-                    dailyStats: {}, 
-                    monthlyStats: {} 
-                };
-                document.getElementById('price').value = 100;
-                localStorage.setItem('beerData', JSON.stringify(beerData));
-                updateCounter();
-                updateHistory();
-                if (beerChart) updateCharts();
+        
+        // ██ ЗАГРУЗКА ДАННЫХ (ЗАГЛУШКА) ██
+        function loadData() {
+            console.log(`${CONFIG.version} loaded | Валюта: ${CONFIG.currency}`);
+        }
+        
+        // ██ ГРАФИКИ (ЗАГЛУШКА) ██
+        let beerChart, moneyChart;
+        
+        document.getElementById('updateChartsBtn')?.addEventListener('click', () => {
+            updateCharts();
+        });
+        
+        function updateCharts() {
+            const ctx1 = document.getElementById('beerChart')?.getContext('2d');
+            const ctx2 = document.getElementById('moneyChart')?.getContext('2d');
+            
+            if (ctx1 && !beerChart) {
+                beerChart = new Chart(ctx1, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
+                        datasets: [{
+                            label: `Пиво (шт)`,
+                            data: [3, 5, 2, 4, 6, 7, 4],
+                            backgroundColor: 'rgba(255, 42, 109, 0.7)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+            }
+            
+            if (ctx2 && !moneyChart) {
+                moneyChart = new Chart(ctx2, {
+                    type: 'line',
+                    data: {
+                        labels: ['Янв', 'Фев', 'Мар', 'Апр', 'Май'],
+                        datasets: [{
+                            label: `Расходы (${CONFIG.currency})`,
+                            data: [15000, 12000, 18000, 14000, 16000],
+                            borderColor: 'rgba(5, 217, 232, 1)',
+                            fill: true,
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true
+                    }
+                });
             }
         }
-
-        // Обновление счетчика
-        function updateCounter() {
-            document.getElementById('beerCount').textContent = beerData.count;
-            document.getElementById('totalCost').textContent = `Общая сумма: ${beerData.totalCost} ₽`;
-            document.getElementById('price').value = beerData.price;
-        }
-
-        // Обновление истории
-        function updateHistory() {
-            const historyList = document.getElementById('historyList');
-            historyList.innerHTML = '';
-            
-            beerData.history.slice(0, 15).forEach(item => {
-                const itemEl = document.createElement('div');
-                itemEl.className = 'history-item';
-                
-                const cost = item.change * item.price;
-                const sign = item.change > 0 ? '+' : '';
-                
-                itemEl.innerHTML = `
-                    <div style="display: flex; align-items: center;">
-                        <span class="history-icon">${item.change > 0 ? '🍺' : '➖'}</span>
-                        <div class="history-details">
-                            <div class="history-amount">${sign}${item.change} пиво</div>
-                            <div class="history-cost">${sign}${cost} ₽ (${item.price} ₽/шт)</div>
-                        </div>
-                    </div>
-                    <div class="history-date">${item.date}</div>
-                `;
-                
-                historyList.appendChild(itemEl);
-            });
-        }
-
-        // Инициализация при загрузке
-        updateCounter();
-        updateHistory();
-        updateStats();
     </script>
 </body>
 </html>
